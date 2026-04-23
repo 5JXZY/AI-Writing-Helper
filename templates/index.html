@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovelForge - AI 小说写作助手</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ cache_bust }}">
+</head>
+<body>
+<div id="app">
+    <!-- Prompt Sets Panel -->
+    <div id="prompt-sets-panel">
+        <div id="prompt-sets-header">
+            <h2>提示词集</h2>
+        </div>
+        <div id="prompt-sets-tree"></div>
+        <div id="prompt-sets-footer">
+            <button onclick="createPromptSet()">+ 新建提示词集</button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <h2>NovelForge</h2>
+            <button class="tree-btn" onclick="openSettings()" title="设置">⚙</button>
+        </div>
+        <div id="novel-tree"></div>
+        <div id="sidebar-footer">
+            <button onclick="createNovel()">+ 新建小说</button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div id="main">
+        <div id="toolbar">
+            <span class="chapter-title" id="current-label">选择一个章节开始写作</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <button onclick="previewPrompt()">预览发送</button>
+                <button onclick="togglePromptPanel()">提示词</button>
+            </div>
+        </div>
+        <div id="content-area">
+            <!-- Editor -->
+            <div id="editor-pane">
+                <textarea id="editor" placeholder="在这里写作..."></textarea>
+                <div id="editor-status">就绪</div>
+            </div>
+            <!-- Chat -->
+            <div id="chat-pane">
+                <div id="chat-header">
+                    <span>AI 助手</span>
+                    <button class="tree-btn" onclick="clearChat()" title="清空对话">🗑</button>
+                </div>
+                <div id="chat-messages"></div>
+                <div id="chat-input-area">
+                    <textarea id="chat-input" placeholder="输入指令，如：帮我写一段打斗场景..." rows="1"></textarea>
+                    <button id="chat-send" onclick="sendChat()">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/app.js?v={{ cache_bust }}"></script>
+</body>
+</html>

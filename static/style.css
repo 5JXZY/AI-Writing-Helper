@@ -1,0 +1,244 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #1a1a2e;
+    --bg2: #16213e;
+    --bg3: #0f3460;
+    --text: #e0e0e0;
+    --text2: #a0a0b0;
+    --accent: #e94560;
+    --accent2: #533483;
+    --border: #2a2a4a;
+    --input-bg: #1e1e3a;
+}
+
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+
+/* ── Layout ── */
+#app { display: flex; height: 100vh; }
+
+/* ── Prompt Sets Panel ── */
+#prompt-sets-panel {
+    width: 280px; min-width: 220px; background: var(--bg2);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+}
+#prompt-sets-panel.hidden { display: none; }
+#prompt-sets-header {
+    padding: 16px; border-bottom: 1px solid var(--border);
+}
+#prompt-sets-header h2 { font-size: 15px; color: var(--accent2); }
+#prompt-sets-tree { flex: 1; overflow-y: auto; padding: 8px; }
+#prompt-sets-footer { padding: 10px; border-top: 1px solid var(--border); }
+#prompt-sets-footer button {
+    width: 100%; padding: 8px; background: var(--accent2); color: #fff;
+    border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+#prompt-sets-footer button:hover { opacity: 0.85; }
+
+/* Prompt set group */
+.ps-group { margin-bottom: 6px; }
+.ps-group-title {
+    padding: 6px 10px; cursor: pointer; font-weight: bold; font-size: 14px;
+    border-radius: 4px; display: flex; justify-content: space-between; align-items: center;
+    color: var(--text);
+}
+.ps-group-title:hover { background: var(--bg3); }
+.ps-group-title.active { color: var(--accent2); }
+.ps-group-title:hover .tree-actions { display: flex; }
+
+/* Prompt set item row */
+.ps-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 8px 4px 16px; margin: 1px 0;
+    border-radius: 4px; font-size: 13px; color: var(--text2);
+    cursor: pointer; user-select: none;
+}
+.ps-item:hover { background: var(--bg3); }
+.ps-item.active { color: var(--accent); background: rgba(233,69,96,0.1); }
+.ps-item.disabled { opacity: 0.45; }
+.ps-item.drag-over { border-top: 2px solid var(--accent); }
+.ps-item input[type="checkbox"] { accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+.ps-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-item-actions { display: none; gap: 2px; flex-shrink: 0; }
+.ps-item:hover .ps-item-actions { display: flex; }
+.ps-mode-btn {
+    background: none; border: none; cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1;
+}
+.ps-mode-btn:hover { transform: scale(1.2); }
+.ps-mode-icon { font-size: 14px; padding: 0 2px; }
+
+/* Reference chapters list */
+.ps-ref-list { margin-left: 24px; margin-bottom: 4px; }
+.ps-ref-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 8px; font-size: 12px; color: var(--text2); border-radius: 3px;
+}
+.ps-ref-item:hover { background: var(--bg3); }
+.ps-ref-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Chapter checkbox in novel tree */
+.tree-chap-check { accent-color: var(--accent2); flex-shrink: 0; cursor: pointer; margin-right: 4px; }
+
+/* Item char count badge */
+.ps-item-chars { font-size: 11px; color: var(--text2); flex-shrink: 0; margin-left: 4px; opacity: 0.7; }
+
+/* Reference select button */
+.ps-ref-select { font-size: 12px !important; color: var(--text2); }
+.ps-ref-select.active { color: var(--accent); font-weight: bold; }
+
+/* ── Sidebar ── */
+#sidebar {
+    width: 260px; min-width: 200px; background: var(--bg2);
+    border-right: 1px solid var(--border); display: flex; flex-direction: column;
+}
+#sidebar-header {
+    padding: 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+}
+#sidebar-header h2 { font-size: 16px; color: var(--accent); }
+#novel-tree { flex: 1; overflow-y: auto; padding: 8px; }
+.tree-novel { margin-bottom: 8px; cursor: grab; }
+.tree-novel[draggable="true"]:active { cursor: grabbing; }
+.tree-novel.drag-over { border-top: 2px solid var(--accent); }
+.tree-novel-title {
+    padding: 6px 10px; cursor: pointer; font-weight: bold; font-size: 14px;
+    border-radius: 4px; display: flex; justify-content: space-between; align-items: center;
+}
+.tree-novel-title:hover { background: var(--bg3); }
+.tree-novel-title.active { color: var(--accent); }
+.tree-vol { margin-left: 12px; }
+.tree-vol-title {
+    padding: 4px 8px; cursor: pointer; font-size: 13px; color: var(--text2);
+    display: flex; justify-content: space-between; align-items: center; border-radius: 4px;
+}
+.tree-vol-title:hover { background: var(--bg3); }
+.tree-chap {
+    margin-left: 20px; padding: 3px 8px; cursor: pointer; font-size: 13px;
+    border-radius: 4px; color: var(--text2);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.tree-chap:hover { background: var(--bg3); }
+.tree-chap .chap-rename { display: none; }
+.tree-chap:hover .chap-rename { display: inline; }
+.tree-chap.active { color: var(--accent); background: rgba(233,69,96,0.1); }
+
+.tree-actions { display: none; gap: 4px; }
+.tree-novel-title:hover .tree-actions,
+.tree-vol-title:hover .tree-actions { display: flex; }
+.tree-btn {
+    background: none; border: none; color: var(--text2); cursor: pointer;
+    font-size: 14px; padding: 0 2px; line-height: 1;
+}
+.tree-btn:hover { color: var(--accent); }
+
+#sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+#sidebar-footer button {
+    width: 100%; padding: 8px; background: var(--accent); color: #fff;
+    border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+#sidebar-footer button:hover { opacity: 0.85; }
+
+/* ── Main Area ── */
+#main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+#toolbar {
+    padding: 8px 16px; background: var(--bg2); border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+#toolbar .chapter-title { font-size: 15px; font-weight: bold; }
+#toolbar .chapter-title.prompt-mode { color: var(--accent2); }
+#toolbar button {
+    padding: 5px 14px; background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+}
+#toolbar button:hover { background: var(--accent2); }
+
+#content-area { flex: 1; display: flex; overflow: hidden; }
+
+/* ── Editor ── */
+#editor-pane { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+#editor {
+    flex: 1; width: 100%; padding: 20px 24px; background: var(--bg);
+    color: var(--text); border: none; outline: none; resize: none;
+    font-family: 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.8;
+}
+#editor-status {
+    padding: 4px 16px; font-size: 12px; color: var(--text2);
+    background: var(--bg2); border-top: 1px solid var(--border);
+}
+
+/* ── Chat ── */
+#chat-pane {
+    width: 400px; min-width: 300px; border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; background: var(--bg2);
+}
+#chat-header {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold;
+}
+#chat-messages {
+    flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+.msg { padding: 10px 14px; border-radius: 10px; font-size: 14px; line-height: 1.6; max-width: 95%; white-space: pre-wrap; word-break: break-word; position: relative; }
+.msg.user { background: var(--bg3); align-self: flex-end; border-bottom-right-radius: 2px; }
+.msg.assistant { background: var(--input-bg); align-self: flex-start; border-bottom-left-radius: 2px; }
+.msg-actions { margin-top: 6px; display: flex; gap: 6px; }
+.msg-actions button {
+    padding: 2px 10px; font-size: 12px; background: var(--bg3); color: var(--text2);
+    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+}
+.msg-actions button:hover { color: var(--accent); border-color: var(--accent); }
+
+.msg-think {
+    margin-bottom: 8px; padding: 8px 10px; background: rgba(83,52,131,0.15);
+    border-left: 3px solid var(--accent2); border-radius: 4px;
+    font-size: 13px; color: var(--text2); white-space: pre-wrap; word-break: break-word;
+    max-height: 300px; overflow-y: auto;
+}
+
+#chat-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+#chat-input {
+    flex: 1; padding: 8px 12px; background: var(--input-bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; resize: none;
+    font-size: 14px; min-height: 40px; max-height: 120px; outline: none;
+    font-family: 'Segoe UI', sans-serif;
+}
+#chat-input:focus { border-color: var(--accent); }
+#chat-send {
+    padding: 8px 16px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 14px; align-self: flex-end;
+}
+#chat-send:hover { opacity: 0.85; }
+#chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Modal ── */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center; z-index: 100;
+}
+.modal {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px; min-width: 400px; max-width: 600px; max-height: 80vh; overflow-y: auto;
+}
+.modal h3 { margin-bottom: 16px; color: var(--accent); }
+.modal label { display: block; margin-bottom: 4px; font-size: 13px; color: var(--text2); }
+.modal input, .modal textarea, .modal select {
+    width: 100%; padding: 8px 10px; margin-bottom: 12px; background: var(--input-bg);
+    color: var(--text); border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px; font-family: inherit; outline: none;
+}
+.modal textarea { min-height: 100px; resize: vertical; }
+.modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+.modal-btns button {
+    padding: 7px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border) !important; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary:hover { background: var(--border); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text2); }

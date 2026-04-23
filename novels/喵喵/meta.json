@@ -1,0 +1,14 @@
+{
+  "name": "喵喵",
+  "volumes": [
+    {
+      "chapters": [
+        {
+          "title": "第一章"
+        }
+      ],
+      "title": "第一卷"
+    }
+  ],
+  "order": 1
+}

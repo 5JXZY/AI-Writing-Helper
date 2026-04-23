@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "enabled": true,
+      "mode": "fixed",
+      "title": "写作风格A"
+    },
+    {
+      "enabled": true,
+      "mode": "fixed",
+      "title": "写作风格B"
+    },
+    {
+      "enabled": true,
+      "mode": "chapter",
+      "title": "当前章节"
+    },
+    {
+      "chapters": [],
+      "enabled": true,
+      "mode": "reference",
+      "title": "参考章节"
+    },
+    {
+      "title": "读取指令说明",
+      "mode": "read_hint",
+      "enabled": true
+    },
+    {
+      "title": "章节目录",
+      "mode": "catalog",
+      "enabled": true
+    },
+    {
+      "enabled": true,
+      "mode": "context",
+      "title": "上下文"
+    }
+  ],
+  "name": "1",
+  "order": 1
+}
