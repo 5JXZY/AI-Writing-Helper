@@ -15,6 +15,12 @@
         </div>
         <div id="prompt-sets-tree"></div>
         <div id="prompt-sets-footer">
+            <div class="add-item-row">
+                <span class="add-item-label">+ 新增:</span>
+                <button class="btn-add-item" onclick="addPromptItemQuick('fixed')" title="新增 fixed 模式条目（用户编辑）— 直接插到当前活动条目集顶端">🔒</button>
+                <button class="btn-add-item" onclick="addPromptItemQuick('ai_editable')" title="新增 ai_editable 模式条目（AI 可改）— 直接插到顶端">✏️</button>
+                <button class="btn-add-item" onclick="addPromptItemQuick('firm')" title="新增 firm 模式条目（FIRM 基线快照）— 直接插到顶端">🛡️</button>
+            </div>
             <button onclick="createPromptSet()">+ 新建提示词集</button>
         </div>
     </div>
@@ -43,6 +49,26 @@
         <div id="content-area">
             <!-- Editor -->
             <div id="editor-pane">
+                <!-- 条目配置行：编辑用户内容条目（fixed/ai_editable/firm）时显示 -->
+                <div id="item-config-row" style="display:none;">
+                    <select id="item-mode-select" onchange="updateItemMode(this.value)" title="存储模式">
+                        <option value="fixed">🔒 fixed</option>
+                        <option value="ai_editable">✏️ ai_editable</option>
+                        <option value="firm">🛡️ firm</option>
+                    </select>
+                    <select id="item-role-select" onchange="updateItemRole(this.value)" title="发送者角色">
+                        <option value="system">system</option>
+                        <option value="user">user</option>
+                        <option value="assistant">assistant</option>
+                    </select>
+                    <input id="item-title-input" type="text" onblur="updateItemTitle()" placeholder="条目标题" title="标题（失焦自动保存）">
+                </div>
+                <div id="firm-toolbar" style="display:none;">
+                    <button onclick="firmLockBaseline()" title="把当前编辑器内容拷贝到 .firm.md，作为可还原的安全点">🔒 锁定为新基线</button>
+                    <button onclick="firmSaveWorking()" title="只保存工作版（.md），基线（.firm.md）不变">💾 保存工作版</button>
+                    <button onclick="firmResetBaseline()" title="从 .firm.md 还原到 .md，丢弃编辑器中未提交的修改">↺ 还原基线</button>
+                    <span class="firm-toolbar-hint">FIRM 模式 · 不自动保存 · 必须显式提交</span>
+                </div>
                 <textarea id="editor" placeholder="在这里写作..."></textarea>
                 <div id="editor-status">就绪</div>
             </div>
@@ -54,8 +80,9 @@
                 </div>
                 <div id="chat-messages"></div>
                 <div id="chat-input-area">
-                    <textarea id="chat-input" placeholder="输入指令，如：帮我写一段打斗场景..." rows="1"></textarea>
+                    <textarea id="chat-input" placeholder="输入指令... (Enter 发送, Shift+Enter 换行)" rows="1"></textarea>
                     <button id="chat-send" onclick="sendChat()">发送</button>
+                    <button id="chat-stop" onclick="stopChat()" title="停止生成" style="display:none">停止</button>
                 </div>
             </div>
         </div>

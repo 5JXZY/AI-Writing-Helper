@@ -1,67 +1,124 @@
 # NovelForge
 
-基于 Flask + JavaScript 的 B/S 架构 AI 辅助内容创作平台，前端采用 HTML/CSS/JS 实现，后端 Python + Flask 提供 RESTful API，数据以 JSON 结构化存储。支持在线编辑、AI 对话辅助、可配置提示词模板与实时流式响应（SSE）。
+A local, privacy-first novel-writing workstation that turns your prompt set into a true source-of-truth for what gets sent to any OpenAI-compatible LLM.
 
-## 技术栈
+[中文文档 / Chinese version →](./README.zh.md)
 
-| 层级 | 技术 |
-|------|------|
-| 后端框架 | Python + Flask |
-| 前端 | HTML5 / CSS3 / JavaScript (ES6+) |
-| 通信协议 | RESTful API + SSE (Server-Sent Events) |
-| 数据存储 | JSON 结构化存储 + Markdown 文件 |
-| AI 接口 | OpenAI 兼容协议，Bearer Token 鉴权 |
+---
 
-## 功能特性
+## Why NovelForge
 
-- **内容管理** — 小说按卷/章组织，支持新建、重命名、拖拽排序，章节内容自动保存
-- **AI 对话辅助** — 集成大语言模型 API，支持实时流式响应（SSE），对话上下文可配置
-- **多轮智能代理交互** — AI 可通过指令自主获取章节内容与外部文件，实现多轮 Agent 循环（最多 5 轮）
-- **可配置提示词模板系统** — 支持固定文本、动态章节引用、对话历史、AI 可编辑等多种模块类型，可拖拽组合排序
-- **外部文件仓库** — 支持挂载外部文件目录，AI 可按需读取参考资料
-- **设置中心** — 可视化配置 API 地址、模型、密钥与系统提示词，支持多模型切换
+Most novel-writing tools either lock you into a vendor's prompt template, or hide the actual bytes that go to the LLM. NovelForge does the opposite — every prompt-set entry is a **draggable, ordered message**, and the panel order **literally equals** the order delivered to the API. No surprises, no hidden glue.
 
-## 项目结构
+It is offline by design (single-user Flask app on `localhost`), uses plain `.md` files for content (Git-friendly, manually editable), and supports any OpenAI-compatible chat endpoint (DeepSeek, Anthropic via proxies, OpenAI, local LLMs, etc.).
+
+## Features
+
+- **Visual prompt-set editor** — drag-reorder, toggle, rename, and inspect every system / user / assistant message before it leaves your machine.
+- **Live-mirroring of the chat input** — the message you are still typing is rendered as an entry in the prompt panel, so the preview is *truly* what the model sees.
+- **Atomic structure updates** — drag-reorder uses a build-and-swap pattern with a per-prompt-set lock; partial-write crashes recover automatically on next launch.
+- **Built-in agent loop** — when the model emits `<<<READ:novel/vol/chap>>>`, `<<<FILE:filename>>>`, or `<<<ASK_AGENT:question>>>`, the server fetches and feeds the result back, up to 5 rounds. False-positive directives (e.g., the model echoing an example) are detected and skipped.
+- **AI-editable prompt items** — let the model rewrite specific fields by closing its reply with `<<<UPDATE:title>>>...<<<END>>>`.
+- **Stop button + keyboard niceties** — `Enter` sends, `Shift+Enter` newlines, IME composition is respected, mid-stream cancellation supported.
+- **Sensible defaults** — every prompt set ships with built-in slots for current chapter, chapter catalog, file repository, chat history, and pending input — each individually toggleable.
+
+## Quick start
+
+### 1. Prerequisites
+- Python 3.9+
+- Modern browser (Chrome / Edge / Firefox)
+
+### 2. Install
+```bash
+git clone https://github.com/<your-username>/NovelForge.git
+cd NovelForge
+pip install flask requests
+```
+
+### 3. Configure
+Open `config.json` and replace `YOUR_API_KEY_HERE` with your real API key. Pick a preset (`active_preset`) or fill in the top-level `api_url` / `model` directly.
+
+### 4. Run
+```bash
+python app.py
+# or on Windows:
+start.bat
+```
+Open `http://localhost:5000` in your browser.
+
+## Architecture overview
 
 ```
 NovelForge/
-├── app.py                 # Flask 后端，21 个 RESTful API 接口
-├── config.json            # 平台配置（端口、API、模型等）
-├── start.bat              # Windows 启动脚本
-├── templates/
-│   └── index.html         # 单页应用主页面
+├── app.py                # Flask backend (~1000 lines)
+├── config.json           # Runtime config (API endpoints, port, ...)
 ├── static/
-│   ├── app.js             # 前端交互逻辑与状态管理
-│   └── style.css          # 界面样式
-├── novels/                # 小说数据存储目录
-├── prompts/               # 提示词模板集
-└── 仓库文件/              # 外部参考文件目录
+│   ├── app.js            # Frontend logic (~1100 lines)
+│   └── style.css
+├── templates/
+│   └── index.html        # Single-page UI
+├── prompts/              # Prompt sets (user data, .gitignored)
+│   └── _builtin/         # Read-only built-in resources
+│       ├── read_hint.md
+│       └── file_repo_intro.md
+└── novels/               # Novel chapters (user data, .gitignored)
 ```
 
-> ⚠️ 本项目需自备 OpenAI 兼容协议的 AI 服务 API 密钥。
+### Backend highlights
 
-## 快速启动
+- **Mode dispatch table** (`MODE_HANDLERS`) — every prompt-item mode (fixed / ai_editable / chapter / catalog / context / read_hint / reference / latest_input / file_repo) is one entry away from extension. No giant if/elif chains.
+- **Build-and-swap atomic writes** — `_build_and_swap_items` constructs `items_new/` then atomically `rename`s it into place, with a `_src_idx` matching strategy (precise) and a title fallback (defensive).
+- **Per-prompt-set thread lock** — Flask's debug server is multi-threaded; `_ps_lock(name)` serializes structure / item / ai-update mutations on the same set, eliminating the classic "save races with reorder" data-loss bug.
+- **Crash recovery on startup** — `_cleanup_prompt_set_residuals` scans for half-completed swaps (`items_new/` or `items_old/`) and fixes them.
+- **Unified messages array** — `/api/chat` accepts a single ordered `messages` list; the frontend's `buildMessages` emits role-tagged entries that map 1:1 to the prompt-panel order.
 
-1. 安装依赖：
-   ```bash
-   pip install flask requests
-   ```
+### Prompt-item modes
 
-2. 编辑 `config.json`，填入你的 AI 服务 API 地址与密钥
+| Mode | Has `.md` file | Content source |
+|------|----------------|----------------|
+| `fixed` | ✓ | User-edited markdown |
+| `ai_editable` | ✓ | Same as `fixed`, plus model can rewrite via `<<<UPDATE:>>>` |
+| `chapter` | — | Live editor textarea |
+| `reference` | — | Selected chapters from the novel tree |
+| `catalog` | — | Auto-generated novel index |
+| `read_hint` | — | `prompts/_builtin/read_hint.md` |
+| `file_repo` | — | `prompts/_builtin/file_repo_intro.md` + filesystem scan |
+| `context` | — | Chat history (expanded by role) |
+| `latest_input` | — | Live mirror of the chat input box |
 
-3. 启动服务：
-   ```bash
-   python app.py
-   ```
+### Agent directives the model can emit
 
-4. 浏览器访问 `http://localhost:5000`
+| Directive | Effect |
+|-----------|--------|
+| `<<<READ:novel/vol/chap>>>` | Server reads `novels/<novel>/chapters/<vol>_<chap>.md` and feeds it back |
+| `<<<FILE:filename>>>` | Server resolves the filename in the file repo (recursive search supported) |
+| `<<<ASK_AGENT:question>>>` | Posts a message to `mailbox/inbox/`, polls `mailbox/outbox/` for the reply |
+| `<<<UPDATE:title>>>...<<<END>>>` | Server overwrites the corresponding `ai_editable` item |
 
-## 架构说明
+## Configuration
 
-- **前后端分离**：前端通过 RESTful API 与后端通信，AI 响应通过 SSE 实时推送至浏览器
-- **Agent 循环机制**：AI 可在对话中发出 `<<<READ:>>>` / `<<<FILE:>>>` 指令，后端自动解析并注入对应内容，实现多轮自主交互
-- **无数据库设计**：所有数据以 JSON + Markdown 文件形式存储，便于备份与迁移
-- **提示词模板系统**：支持多种模块类型的灵活组合与拖拽排序，可针对不同写作场景快速切换配置
+`config.json` fields:
 
-<!-- ## 截图 -->
-<!-- 待补充 -->
+| Field | Description |
+|-------|-------------|
+| `port` | HTTP port (default 5000) |
+| `api_url` | LLM endpoint (must speak OpenAI-compatible chat protocol) |
+| `api_key` | Bearer token sent in `Authorization` header |
+| `model` | Model identifier (e.g. `deepseek-chat`, `gpt-4o`, `claude-sonnet-4-20250514`) |
+| `default_system_prompt` | Optional fallback injected only when no `system` message is present |
+| `file_repo_dir` | Path (absolute or relative to project) to your reference files folder |
+| `active_preset` | Which preset name from `presets` to apply on startup |
+| `presets` | Named bundles of `{api_url, api_key, model}` that you can swap between |
+
+## Status
+
+This is a living project — the feature roadmap (see `阶段 X` in commit history) progressively adds:
+- Phase 3: FIRM mode (locked-baseline prompt items with explicit save)
+- Phase 4: Per-item gear-icon drawer UI for fine-grained config
+- Phase 5: Light-green "+ new prompt item" button + modal cleanup
+
+Stable enough for daily writing use today.
+
+## License
+
+MIT — do whatever you want, no warranty.

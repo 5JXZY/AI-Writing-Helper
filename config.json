@@ -1,0 +1,26 @@
+{
+    "port": 5000,
+    "api_url": "https://api.deepseek.com/chat/completions",
+    "api_key": "YOUR_API_KEY_HERE",
+    "model": "deepseek-chat",
+    "default_system_prompt": "",
+    "file_repo_dir": "仓库文件",
+    "active_preset": "DeepSeek",
+    "presets": {
+        "Claude": {
+            "api_url": "https://api.anthropic.com/v1/messages",
+            "api_key": "YOUR_API_KEY_HERE",
+            "model": "claude-sonnet-4-20250514"
+        },
+        "DeepSeek": {
+            "api_url": "https://api.deepseek.com/chat/completions",
+            "api_key": "YOUR_API_KEY_HERE",
+            "model": "deepseek-chat"
+        },
+        "OpenAI": {
+            "api_url": "https://api.openai.com/v1/chat/completions",
+            "api_key": "YOUR_API_KEY_HERE",
+            "model": "gpt-4o"
+        }
+    }
+}
