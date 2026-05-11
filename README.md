@@ -1,5 +1,4 @@
-<img width="752" height="819" alt="屏幕截图 2026-05-11 152442" src="https://github.com/user-attachments/assets/6f518418-c9de-4034-b668-9ceb8e2ddbf6" />
-<img width="462" height="422" alt="屏幕截图 2026-05-11 161241" src="https://github.com/user-attachments/assets/d1c58406-9a3b-4e8c-9383-55441cda8108" />
+
 # NovelForge
 
 A local, privacy-first novel-writing workstation that turns your prompt set into a true source-of-truth for what gets sent to any OpenAI-compatible LLM.
