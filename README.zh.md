@@ -1,24 +1,24 @@
-# NovelForge
+# AI Writing Helper
 
 一个**本地优先**的小说写作工作台。把你的提示词集变成"发给 LLM 的真实清单"——左边面板里看到啥顺序，AI 收到的就是啥顺序。
 
-[English version →](./README.md)
+[English →](./README.en.md)
 
 ---
 
 ## 这玩意儿解决什么问题
 
-绝大多数小说写作工具不是把你绑死在某个厂商的 prompt 模板上，就是把"实际发给 LLM 的字节"藏起来。NovelForge 走相反的路子——**每条提示词都是可拖动、可重排的独立消息**，左边面板从上到下的顺序，**一字不差地**就是发给 API 的顺序。所见即所发，没有黑箱。
+绝大多数小说写作工具不是把你绑死在某个厂商的 prompt 模板上，就是把"实际发给 LLM 的字节"藏起来。AI Writing Helper 走相反的路子——**每条提示词都是可拖动、可重排的独立消息**，左边面板从上到下的顺序，**一字不差地**就是发给 API 的顺序。所见即所发，没有黑箱。
 
-它**默认离线**（单机 Flask 跑在 `localhost`），用纯 `.md` 文件存内容（Git 友好、能手动改），兼容任何 OpenAI 协议的 chat 端点（DeepSeek、走代理的 Anthropic、OpenAI、本地 LLM 都行）。
+它**默认离线**(单机 Flask 跑在 `localhost`)，用纯 `.md` 文件存内容(Git 友好、能手动改)，兼容任何 OpenAI 协议的 chat 端点(DeepSeek、走代理的 Anthropic、OpenAI、本地 LLM 都行)。
 
 ## 特性一览
 
 - **可视化提示词编辑器** —— 每条 system / user / assistant 消息可拖、可关、可改名、可预览，看清楚每个字节再送出门。
 - **输入框实时镜像** —— 你正在敲还没发的字，会实时映射到提示词面板里成为一个条目，所以"发送预览"是真预览。
 - **原子化结构更新** —— 拖拽用 build-and-swap 模式 + 每个集合一把线程锁，半途崩了下次启动自动恢复，不会再出现"拖完发现内容跟标题对不上"的恶性 bug。
-- **内置 agent 循环** —— 模型输出 `<<<READ:小说/卷/章>>>`、`<<<FILE:文件名>>>` 或 `<<<ASK_AGENT:问题>>>`，服务端自动取数据喂回去，最多 5 轮。模型只是举例复述时检测自动跳过，不会死循环。
-- **AI 可改条目** —— 让 AI 重写指定字段，在回复末尾加 `<<<UPDATE:标题>>>新内容<<<END>>>` 即可。
+- **内置 agent 循环** —— 模型输出 `<<<READ:小说/卷/章>>>`、`<<<FILE:文件名>>>` 或 `<<<ASK_AGENT:问题>>>`,服务端自动取数据喂回去,最多 5 轮。模型只是举例复述时检测自动跳过,不会死循环。
+- **AI 可改条目** —— 让 AI 重写指定字段,在回复末尾加 `<<<UPDATE:标题>>>新内容<<<END>>>` 即可。
 - **停止按钮 + 顺手快捷键** —— `Enter` 发送、`Shift+Enter` 换行、中文输入法选字时不误发、流式生成可中断。
 - **合理的默认值** —— 新建的提示词集自带"当前章节、章节目录、文件仓库、上下文、用户最新发言"等占位条目，每个独立开关。
 
@@ -26,17 +26,17 @@
 
 ### 1. 环境
 - Python 3.9+
-- 现代浏览器（Chrome / Edge / Firefox 等）
+- 现代浏览器(Chrome / Edge / Firefox 等)
 
 ### 2. 安装
 ```bash
-git clone https://github.com/<你的用户名>/NovelForge.git
-cd NovelForge
+git clone https://github.com/5JXZY/AI-Writing-Helper.git
+cd AI-Writing-Helper
 pip install flask requests
 ```
 
 ### 3. 配置
-打开 `config.json`，把所有 `YOUR_API_KEY_HERE` 替换成你真实的 API key。可以挑一个预设（修改 `active_preset`），也可以直接改顶层的 `api_url` / `model`。
+打开 `config.json`，把所有 `YOUR_API_KEY_HERE` 替换成你真实的 API key。可以挑一个预设(修改 `active_preset`)，也可以直接改顶层的 `api_url` / `model`。
 
 ### 4. 启动
 ```bash
@@ -49,7 +49,7 @@ start.bat
 ## 架构概览
 
 ```
-NovelForge/
+AI-Writing-Helper/
 ├── app.py                # Flask 后端（~1000 行）
 ├── config.json           # 运行配置（API 地址、端口等）
 ├── static/
