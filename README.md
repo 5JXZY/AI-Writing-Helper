@@ -1,5 +1,4 @@
-
-# NovelForge
+# AI Writing Helper
 
 A local, privacy-first novel-writing workstation that turns your prompt set into a true source-of-truth for what gets sent to any OpenAI-compatible LLM.
 
@@ -7,9 +6,9 @@ A local, privacy-first novel-writing workstation that turns your prompt set into
 
 ---
 
-## Why NovelForge
+## Why AI Writing Helper
 
-Most novel-writing tools either lock you into a vendor's prompt template, or hide the actual bytes that go to the LLM. NovelForge does the opposite — every prompt-set entry is a **draggable, ordered message**, and the panel order **literally equals** the order delivered to the API. No surprises, no hidden glue.
+Most novel-writing tools either lock you into a vendor's prompt template, or hide the actual bytes that go to the LLM. AI Writing Helper does the opposite — every prompt-set entry is a **draggable, ordered message**, and the panel order **literally equals** the order delivered to the API. No surprises, no hidden glue.
 
 It is offline by design (single-user Flask app on `localhost`), uses plain `.md` files for content (Git-friendly, manually editable), and supports any OpenAI-compatible chat endpoint (DeepSeek, Anthropic via proxies, OpenAI, local LLMs, etc.).
 
@@ -31,9 +30,8 @@ It is offline by design (single-user Flask app on `localhost`), uses plain `.md`
 
 ### 2. Install
 ```bash
-git clone https://github.com/<your-username>/NovelForge.git<img width="462" height="422" alt="屏幕截图 2026-05-11 161241" src="https://github.com/user-attachments/assets/d21a4a0a-4291-4eac-8e52-482079c48e79" />
-
-cd NovelForge
+git clone https://github.com/5JXZY/AI-Writing-Helper.git
+cd AI-Writing-Helper
 pip install flask requests
 ```
 
@@ -51,7 +49,7 @@ Open `http://localhost:5000` in your browser.
 ## Architecture overview
 
 ```
-NovelForge/
+AI-Writing-Helper/
 ├── app.py                # Flask backend (~1000 lines)
 ├── config.json           # Runtime config (API endpoints, port, ...)
 ├── static/
@@ -114,7 +112,7 @@ NovelForge/
 
 ## Status
 
-This is a living project — the feature roadmap (see `阶段 X` in commit history) progressively adds:
+This is a living project. Roadmap:
 - Phase 3: FIRM mode (locked-baseline prompt items with explicit save)
 - Phase 4: Per-item gear-icon drawer UI for fine-grained config
 - Phase 5: Light-green "+ new prompt item" button + modal cleanup
