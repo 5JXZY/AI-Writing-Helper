@@ -31,7 +31,8 @@ It is offline by design (single-user Flask app on `localhost`), uses plain `.md`
 
 ### 2. Install
 ```bash
-git clone https://github.com/<your-username>/NovelForge.git
+git clone https://github.com/<your-username>/NovelForge.git<img width="462" height="422" alt="屏幕截图 2026-05-11 161241" src="https://github.com/user-attachments/assets/d21a4a0a-4291-4eac-8e52-482079c48e79" />
+
 cd NovelForge
 pip install flask requests
 ```
